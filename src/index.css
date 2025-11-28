@@ -1,0 +1,26 @@
+@import 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+@import 'https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+
+/* Basic app styles to match Figma layout roughly */
+body {
+  @apply bg-gray-50 text-gray-900;
+}
+
+.map-container {
+  height: calc(100vh - 64px);
+}
+
+/* Ensure Leaflet's internal container fills the parent (fix small tiled map) */
+.map-container .leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+}
+
