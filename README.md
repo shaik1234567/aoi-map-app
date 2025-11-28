@@ -205,8 +205,3 @@ AOIs saved as:
 
 ---
 
-If you want, I can also generate:
-
-* A downloadable ZIP of the full source
-* A polished PDF version of this README
-* A Figma-aligned UI polish plan
