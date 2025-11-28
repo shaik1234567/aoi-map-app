@@ -1,126 +1,212 @@
 # AOI Map App 🛰️
 
-An interactive single-page application to create and manage Areas of Interest (AOIs) on a map. Built with React + TypeScript + Vite and styled with Tailwind CSS. The app demonstrates:
+An interactive single-page application for creating and managing **Areas of Interest (AOIs)** on a map using WMS satellite imagery.
 
-- A WMS (raster) overlay from NRW (`https://www.wms.nrw.de/geobasis/wms_nw_dop`)
-- Drawing tools (point, polyline, polygon, rectangle) via `leaflet-draw`
-- Client-side persistence of AOIs as GeoJSON in `localStorage`
-- Layer controls and a small geocoding search (Nominatim)
-- End-to-end tests using Playwright
+Repository: [https://github.com/shaik1234567/aoi-map-app](https://github.com/shaik1234567/aoi-map-app)
 
-🎯 Quick start
+---
 
-1. Install dependencies
+## 🚀 Features
 
-```cmd
-cd e:\projects\aoi-map-app
+### **Map & Layers**
+
+* OpenStreetMap (OSM) base layer
+* NRW WMS overlay (`https://www.wms.nrw.de/geobasis/wms_nw_dop`)
+* Toggle WMS visibility
+
+### **Drawing Tools**
+
+Powered by **leaflet-draw**:
+
+* Create marker, polyline, polygon, rectangle
+* Edit/modify drawn shapes
+* Delete AOIs
+* AOIs are stored as **GeoJSON** in `localStorage`
+
+### **Search (Nominatim)**
+
+* Search any location
+* Fly the map to selected result
+
+### **Persistence**
+
+* AOIs saved under key: `aoi_features`
+* Loaded automatically on page reload
+
+### **Testing**
+
+* End-to-end tests with **Playwright**
+* Covers:
+
+  * App render
+  * WMS toggle behavior
+  * AOI persistence
+
+### **CI/CD**
+
+* GitHub Actions workflow (`ci.yml`)
+* Runs build + e2e tests on push/PR
+
+---
+
+## 📂 Project Structure
+
+```
+aoi-map-app/
+├── src/
+│   ├── App.tsx
+│   ├── main.tsx
+│   ├── index.css
+│   └── components/
+│       └── MapView.tsx
+├── e2e/
+│   └── map.spec.ts
+├── .github/workflows/ci.yml
+├── playwright.config.ts
+├── package.json
+└── README.md
+```
+
+---
+
+## 🧭 Quick Start
+
+### Install Dependencies
+
+```bash
 npm install
 ```
 
-2. Start dev server
+### Start Development Server
 
-```cmd
+```bash
 npm run dev
 ```
 
-3. Run Playwright tests (dev server is auto-started by Playwright config)
+Open: **[http://localhost:5173](http://localhost:5173)**
 
-```cmd
+### Run Playwright Tests
+
+```bash
 npx playwright install --with-deps
 npm run test:e2e
 ```
 
-🚀 What we implemented (high level)
+---
 
-- UI: responsive sidebar + map area (`src/App.tsx`) with layer and AOI controls.
-- Map: `src/components/MapView.tsx` — OpenStreetMap base + NRW WMS layer (tile WMS), zoom/pan support.
-- Drawing: `leaflet-draw` integrated, create/edit/delete AOIs saved to `localStorage` as GeoJSON features.
-- Search: Nominatim geocoding search in the sidebar; search results fly the map to the location.
-- Testing: Playwright e2e tests in `e2e/` (app loads, layer toggle, persistence).
-- CI: GitHub Actions workflow to run build + e2e tests on push/PR (`.github/workflows/ci.yml`).
+## 🏗️ Tech Stack
 
-📁 Project structure (important files)
+* React + TypeScript + Vite
+* Leaflet + react-leaflet
+* leaflet-draw
+* Tailwind CSS
+* Playwright (E2E tests)
+* GitHub Actions (CI)
 
-- `src/App.tsx` — layout and sidebar UI
-- `src/components/MapView.tsx` — map, WMS layer, draw manager, persistence
-- `src/index.css` — Tailwind + small layout adjustments
-- `e2e/map.spec.ts` — Playwright tests
-- `er-diagram.svg` — simple AOI storage diagram
-- `.github/workflows/ci.yml` — CI pipeline (build + e2e)
+---
 
-🗺️ Map library choice
-- **Selected:** Leaflet + react-leaflet
-  - Pros: lightweight, easy to integrate WMS, rich plugin ecosystem (`leaflet-draw`), quick to implement.
-  - Alternatives: MapLibre / Mapbox GL (WebGL, better performance for many vector features), OpenLayers (robust WMS support). For this prototype, Leaflet is a pragmatic choice.
+## 🧱 Architecture Summary
 
-🧭 Architecture
+* `MapView` handles **all map logic**: WMS, draw tools, persistence
+* `App.tsx` manages sidebar UI & global state
+* AOIs stored as GeoJSON FeatureCollection
+* Minimal, modular, testable design
 
-- Single-page React application.
-- `MapView` encapsulates all map logic (map creation, base layers, WMS, draw manager).
-- AOIs are stored client-side in `localStorage` as an array of GeoJSON `Feature` objects under the key `aoi_features`.
-- Playwright e2e tests run against a dev server started by the `webServer` option in `playwright.config.ts`.
+---
 
-🔧 Performance considerations
+## 📈 Performance Notes
 
-- Debounced saving of AOIs to reduce write frequency (300ms).
-- For future scale (1000s of features):
-  - Move features to a server-side spatial database and expose vector tiles or filtered GeoJSON endpoints.
-  - Use marker clustering and canvas rendering or WebGL-based rendering for large vector datasets.
-  - Lazy-load or page features by spatial extent.
+Already implemented:
 
-🧪 Testing
+* Debounced AOI saves (300ms)
 
-- Playwright e2e tests: `e2e/map.spec.ts` (3 tests) — these are intended to demonstrate testing approach and are passing locally.
-- With more time we would:
-  - Add unit tests using Jest + React Testing Library for `MapView` and smaller components.
-  - Add visual regression tests to verify UI against Figma (Percy or Playwright snapshots).
+Production recommendations:
 
-⚖️ Tradeoffs & production readiness
+* Move AOIs to PostGIS backend
+* Serve vector tiles for large datasets
+* Use marker clustering & WebGL rendering
+* Lazy load features by viewport
 
-- Persistence: `localStorage` is simple and works for demo, but production should use authenticated APIs and a spatial DB (PostGIS).
-- Map tiles and WMS: the WMS used here is public; for production consider tile/WMTS or cached tiles to improve performance.
-- Accessibility: components are functional but require an accessibility audit and ARIA improvements.
+---
 
-📦 API & Schema (client-side)
+## 🧪 Testing Strategy
 
-AOIs are stored as an array of GeoJSON `Feature` objects. Example feature:
+### E2E Tests (Playwright)
+
+Tests cover:
+
+1. App loads
+2. WMS toggle
+3. AOI persistence across reloads
+
+Future improvements:
+
+* Jest unit tests
+* Visual regression tests
+* Accessibility tests
+
+---
+
+## ⚖️ Tradeoffs
+
+| Decision           | Reason                         | Tradeoff            |
+| ------------------ | ------------------------------ | ------------------- |
+| Leaflet            | Fast, simple, good WMS support | Not WebGL optimized |
+| localStorage       | Self-contained demo            | Not scalable        |
+| Minimal UI styling | Faster delivery                | Not pixel-perfect   |
+
+---
+
+## 📡 API / Data Model
+
+AOIs saved as:
 
 ```json
 {
-  "type": "Feature",
-  "geometry": { "type": "Polygon", "coordinates": [[[10.0, 51.0], [10.1,51.0],[10.1,51.1],[10.0,51.1],[10.0,51.0]]] },
-  "properties": { "createdAt": 1699999999999 }
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {},
+      "properties": {
+        "createdAt": 1699999999999
+      }
+    }
+  ]
 }
 ```
 
-If a backend is added, minimal endpoints could be:
-- `GET /api/aoi` → return a `FeatureCollection`
-- `POST /api/aoi` → accept a `Feature` to persist
-- `DELETE /api/aoi/:id` → delete a feature
+---
 
-🧾 ER / Diagram
-- See `er-diagram.svg` in the repository for a simple visual of AOI storage and interactions.
+## 🎥 Demo Script (3–5 minutes)
 
-🎥 Demo video (3–5 minutes) — suggested script
+1. Intro: purpose + tech stack
+2. Start app: `npm run dev`
+3. Show map interactions (pan/zoom)
+4. Toggle WMS
+5. Draw AOIs → edit → reload → persistence
+6. Search location
+7. Run tests & show CI
+8. Wrap up
 
-1. Intro (10–15s): Quick summary of the app and tech stack.
-2. Start the app (20s): Show `npm install` + `npm run dev` and open `http://localhost:5173`.
-3. Show map & WMS (40s): Toggle WMS layer and pan/zoom.
-4. Draw AOI (45s): Create a polygon, edit it, show that it's persisted after reload.
-5. Search (20s): Use the search box to find a location and fly to it.
-6. Tests & CI (30s): Show `npm run test:e2e` or GitHub Actions passing.
-7. Wrap-up (10–15s): Note tradeoffs and next steps.
+---
 
-🧭 How to contribute / extend
+## ⏱️ Time Spent
 
-- Add unit tests (Jest + RTL).
-- Replace `localStorage` with an API + DB.
-- Add visual regression and accessibility tests.
+| Task                  | Time           |
+| --------------------- | -------------- |
+| Project setup         | 1.0 hr         |
+| Map + WMS integration | 1.0 hr         |
+| Drawing + persistence | 1.0 hr         |
+| UI + search           | 0.75 hr        |
+| Playwright + CI       | 1.5 hr         |
+| Documentation         | 1.0 hr         |
+| **Total**             | **6.25 hours** |
 
-—
-If you'd like, I can now:
-- (A) polish the UI colors/spacing/icons to match Figma exactly,
-- (B) add unit tests and visual regression snapshots, or
-- (C) draft the demo video recording and provide a recorded sample narration.
+---
 
-Thanks — the app is ready for submission and the GitHub repo contains the source and CI workflow: `https://github.com/shaik1234567/aoi-map-app`
+If you want, I can also generate:
+
+* A downloadable ZIP of the full source
+* A polished PDF version of this README
+* A Figma-aligned UI polish plan
